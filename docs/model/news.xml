@@ -1,0 +1,44 @@
+<Package xmlns:xsi="" xmlns:xsd="">
+    <Name>news</Name>
+    <Entities>
+        <Entity Name="Category" Namespace="news" Table="categories">
+            <Attributes>
+                <Attribute Name="ID" DBName="categoryId" DBType="int8" GoType="int64" PK="true" Nullable="Yes" Addable="true" Updatable="true" Min="0" Max="0"></Attribute>
+                <Attribute Name="Title" DBName="title" DBType="text" GoType="string" PK="false" Nullable="No" Addable="true" Updatable="true" Min="0" Max="0"></Attribute>
+                <Attribute Name="StatusID" DBName="statusId" DBType="int4" GoType="int" PK="false" Nullable="No" Addable="true" Updatable="true" Min="0" Max="0"></Attribute>
+            </Attributes>
+            <Searches>
+                <Search Name="IDs" AttrName="ID" SearchType="SEARCHTYPE_ARRAY"></Search>
+                <Search Name="TitleILike" AttrName="Title" SearchType="SEARCHTYPE_ILIKE"></Search>
+            </Searches>
+        </Entity>
+        <Entity Name="News" Namespace="news" Table="news">
+            <Attributes>
+                <Attribute Name="ID" DBName="newsId" DBType="int8" GoType="int64" PK="true" Nullable="Yes" Addable="true" Updatable="true" Min="0" Max="0"></Attribute>
+                <Attribute Name="Title" DBName="title" DBType="text" GoType="string" PK="false" Nullable="No" Addable="true" Updatable="true" Min="0" Max="0"></Attribute>
+                <Attribute Name="Content" DBName="content" DBType="text" GoType="string" PK="false" Nullable="No" Addable="true" Updatable="true" Min="0" Max="0"></Attribute>
+                <Attribute Name="TagIDs" DBName="tagIds" IsArray="true" DBType="int8" GoType="[]int64" PK="false" FK="Tag" Nullable="Yes" Addable="true" Updatable="true" Min="0" Max="0"></Attribute>
+                <Attribute Name="CategoryID" DBName="categoryId" DBType="int8" GoType="int64" PK="false" FK="Category" Nullable="No" Addable="true" Updatable="true" Min="0" Max="0"></Attribute>
+                <Attribute Name="CreatedAt" DBName="createdAt" DBType="timestamptz" GoType="time.Time" PK="false" Nullable="No" Addable="false" Updatable="false" Min="0" Max="0"></Attribute>
+                <Attribute Name="StatusID" DBName="statusId" DBType="int4" GoType="int" PK="false" Nullable="No" Addable="true" Updatable="true" Min="0" Max="0"></Attribute>
+            </Attributes>
+            <Searches>
+                <Search Name="IDs" AttrName="ID" SearchType="SEARCHTYPE_ARRAY"></Search>
+                <Search Name="TitleILike" AttrName="Title" SearchType="SEARCHTYPE_ILIKE"></Search>
+                <Search Name="ContentILike" AttrName="Content" SearchType="SEARCHTYPE_ILIKE"></Search>
+                <Search Name="TagID" AttrName="TagIDs" SearchType="SEARCHTYPE_ARRAY_CONTAINS"></Search>
+            </Searches>
+        </Entity>
+        <Entity Name="Tag" Namespace="news" Table="tags">
+            <Attributes>
+                <Attribute Name="ID" DBName="tagId" DBType="int8" GoType="int64" PK="true" Nullable="Yes" Addable="true" Updatable="true" Min="0" Max="0"></Attribute>
+                <Attribute Name="Title" DBName="title" DBType="text" GoType="string" PK="false" Nullable="No" Addable="true" Updatable="true" Min="0" Max="0"></Attribute>
+                <Attribute Name="StatusID" DBName="statusId" DBType="int4" GoType="int" PK="false" Nullable="No" Addable="true" Updatable="true" Min="0" Max="0"></Attribute>
+            </Attributes>
+            <Searches>
+                <Search Name="IDs" AttrName="ID" SearchType="SEARCHTYPE_ARRAY"></Search>
+                <Search Name="TitleILike" AttrName="Title" SearchType="SEARCHTYPE_ILIKE"></Search>
+            </Searches>
+        </Entity>
+    </Entities>
+</Package>
