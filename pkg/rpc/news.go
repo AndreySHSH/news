@@ -3,6 +3,7 @@ package rpc
 
 import (
 	"context"
+	"errors"
 	"github.com/vmkteam/zenrpc/v2"
 	"news/pkg/db"
 )
@@ -20,6 +21,10 @@ func (n *NewsService) GetByID(ctx context.Context, id int64) (*News, error) {
 	news, err := n.Repo.NewsByID(ctx, id, n.Repo.FullNews())
 	if err != nil {
 		return nil, zenrpc.NewError(500, err)
+	}
+
+	if news == nil {
+		return nil, zenrpc.NewError(404, errors.New("news is not found"))
 	}
 
 	return newNews(news), nil
