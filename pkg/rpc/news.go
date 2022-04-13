@@ -14,12 +14,12 @@ func (n *NewsService) Get(ctx context.Context, filter *NewsSearch) ([]News, erro
 		return nil, zenrpc.NewError(500, err)
 	}
 
-	mapTags, err := n.getTags(ctx, unpackTags(nl))
+	tags, err := n.getTags(ctx, unpackTags(nl))
 	if err != nil {
 		return nil, zenrpc.NewError(500, err)
 	}
 
-	return n.newNewsList(nl, *mapTags), nil
+	return n.newNewsList(nl, *tags), nil
 }
 
 func (n *NewsService) GetByID(ctx context.Context, id int64) (*News, error) {
@@ -32,12 +32,12 @@ func (n *NewsService) GetByID(ctx context.Context, id int64) (*News, error) {
 		return nil, zenrpc.NewError(404, errors.New("news is not found"))
 	}
 
-	mapTags, err := n.getTags(ctx, unpackTag(news))
+	tags, err := n.getTags(ctx, unpackTag(news))
 	if err != nil {
 		return nil, zenrpc.NewError(500, err)
 	}
 
-	return n.newNews(news, *mapTags), nil
+	return n.newNews(news, *tags), nil
 }
 
 func (n *NewsService) Count(ctx context.Context, filter *NewsSearch) (int, error) {

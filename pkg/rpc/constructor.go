@@ -80,45 +80,45 @@ func newCategory(in *db.Category) *Category {
 }
 
 func unpackTag(news *db.News) map[int64]int64 {
-	var tagsIDsMap = make(map[int64]int64)
+	var tagsIDs = make(map[int64]int64)
 	for _, s := range news.TagIDs {
-		tagsIDsMap[s] = s
+		tagsIDs[s] = s
 	}
 
-	return tagsIDsMap
+	return tagsIDs
 }
 
 func unpackTags(news []db.News) map[int64]int64 {
-	var tagsIDsMap = make(map[int64]int64)
+	var tagsIDs = make(map[int64]int64)
 	for _, v := range news {
 		for _, s := range v.TagIDs {
-			tagsIDsMap[s] = s
+			tagsIDs[s] = s
 		}
 	}
 
-	return tagsIDsMap
+	return tagsIDs
 }
 
 func (n *NewsService) getTags(ctx context.Context, tagsIDsMap map[int64]int64) (*map[int64]Tag, error) {
-	var tagsMap = make(map[int64]Tag)
-	var tagsIDsSlice []int64
+	var tags = make(map[int64]Tag)
+	var tagsIDs []int64
 
 	for k, _ := range tagsIDsMap {
-		tagsIDsSlice = append(tagsIDsSlice, k)
+		tagsIDs = append(tagsIDs, k)
 	}
 
-	tl, err := n.Repository.TagsByFilters(ctx, &db.TagSearch{IDs: tagsIDsSlice}, db.PagerNoLimit)
+	tl, err := n.Repository.TagsByFilters(ctx, &db.TagSearch{IDs: tagsIDs}, db.PagerNoLimit)
 	if err != nil {
 		return nil, err
 	}
 
 	for _, v := range tl {
-		tagsMap[v.ID] = Tag{
+		tags[v.ID] = Tag{
 			ID:    v.ID,
 			Title: v.Title,
 		}
 	}
-	return &tagsMap, nil
+	return &tags, nil
 }
 
 func (n *NewsService) newNewsList(in []db.News, tagsMap map[int64]Tag) []News {
