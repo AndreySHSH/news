@@ -25,7 +25,7 @@ func main() {
 
 	err = godotenv.Load(".env")
 	if err != nil {
-		panic(fmt.Sprintf(`fatal error loading .env file, %s`, err.Error()))
+		panic(fmt.Sprintf(`fatal error loading .env file, error: %s`, err.Error()))
 	}
 
 	pgDataOnConnect := pg.Options{
@@ -40,15 +40,22 @@ func main() {
 
 	db := app.NewDB(pgDataOnConnect)
 	if err := db.Ping(ctxApp); err != nil {
-		panic(fmt.Sprintf(`fatal error connect DB, %s`, err.Error()))
+		panic(fmt.Sprintf(`fatal error connect DB, error: %s`, err.Error()))
 	}
+
+	defer func(db *pg.DB) {
+		err := db.Close()
+		if err != nil {
+			logger.Crit(err)
+		}
+	}(db)
 
 	newsRPC, gen := rpc.NewNewsRPC(*db)
 	go app.NewHTTP(newsRPC, *gen)
 
 	<-app.GracefulShutdown()
 	_, forceCancel := context.WithTimeout(ctxApp, shutDownDuration)
+	defer forceCancel()
 
 	logger.Notice("Graceful Shutdown")
-	defer forceCancel()
 }
