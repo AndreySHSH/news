@@ -8,6 +8,7 @@ import (
 type NewsService struct {
 	zenrpc.Service
 	Repository db.NewsRepo
+	tags       map[int64]Tag
 }
 
 type CategoryService struct {
@@ -24,6 +25,11 @@ type CategorySearch struct {
 	CategoryID *int64 `json:"id"`
 }
 
+type Tag struct {
+	ID    int64  `json:"id"`
+	Title string `json:"title"`
+}
+
 type Category struct {
 	ID    int64  `json:"id"`
 	Title string `json:"title"`
@@ -33,7 +39,7 @@ type News struct {
 	ID         int64    `json:"id"`
 	Title      string   `json:"title"`
 	Content    string   `json:"content"`
-	TagIDs     []int64  `json:"tagIDs"`
+	Tags       []Tag    `json:"tags"`
 	CategoryID int64    `json:"categoryID"`
 	CreatedAt  string   `json:"createdAt"`
 	Category   Category `json:"category"`

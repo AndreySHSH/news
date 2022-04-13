@@ -69,10 +69,10 @@ func (NewsService) SMD() smd.ServiceInfo {
 									Type: smd.String,
 								},
 								{
-									Name: "tagIDs",
+									Name: "tags",
 									Type: smd.Array,
 									Items: map[string]string{
-										"type": smd.Integer,
+										"$ref": "#/definitions/Tag",
 									},
 								},
 								{
@@ -87,6 +87,19 @@ func (NewsService) SMD() smd.ServiceInfo {
 									Name: "category",
 									Ref:  "#/definitions/Category",
 									Type: smd.Object,
+								},
+							},
+						},
+						"Tag": {
+							Type: "object",
+							Properties: smd.PropertyList{
+								{
+									Name: "id",
+									Type: smd.Integer,
+								},
+								{
+									Name: "title",
+									Type: smd.String,
 								},
 							},
 						},
@@ -130,10 +143,10 @@ func (NewsService) SMD() smd.ServiceInfo {
 							Type: smd.String,
 						},
 						{
-							Name: "tagIDs",
+							Name: "tags",
 							Type: smd.Array,
 							Items: map[string]string{
-								"type": smd.Integer,
+								"$ref": "#/definitions/Tag",
 							},
 						},
 						{
@@ -151,6 +164,19 @@ func (NewsService) SMD() smd.ServiceInfo {
 						},
 					},
 					Definitions: map[string]smd.Definition{
+						"Tag": {
+							Type: "object",
+							Properties: smd.PropertyList{
+								{
+									Name: "id",
+									Type: smd.Integer,
+								},
+								{
+									Name: "title",
+									Type: smd.String,
+								},
+							},
+						},
 						"Category": {
 							Type: "object",
 							Properties: smd.PropertyList{

@@ -1,7 +1,9 @@
 package rpc
 
 import (
+	"context"
 	"github.com/go-pg/pg/v10"
+	"github.com/ivahaev/go-logger"
 	"github.com/vmkteam/rpcgen/v2"
 	"github.com/vmkteam/zenrpc-middleware"
 	"github.com/vmkteam/zenrpc/v2"
@@ -78,26 +80,53 @@ func newCategory(in *db.Category) *Category {
 	}
 }
 
-func newNewsList(in []db.News) []News {
+func (n *NewsService) getTags(ctx context.Context) {
+	var tags = make(map[int64]Tag)
+
+	tl, err := n.Repository.TagsByFilters(ctx, nil, db.PagerNoLimit)
+	if err != nil {
+		logger.Error(err)
+
+	}
+
+	for _, v := range tl {
+		tags[v.ID] = Tag{
+			ID:    v.ID,
+			Title: v.Title,
+		}
+	}
+
+	n.tags = tags
+}
+
+func (n *NewsService) newNewsList(in []db.News) []News {
 	var news []News
 
 	for _, v := range in {
-		news = append(news, *newNews(&v))
+		news = append(news, *n.newNews(&v))
 	}
 
 	return news
 }
 
-func newNews(in *db.News) *News {
+func (n *NewsService) newNews(in *db.News) *News {
 	if in == nil {
 		return nil
+	}
+
+	var tags []Tag
+
+	for _, v := range in.TagIDs {
+		if value, is := n.tags[v]; is != false {
+			tags = append(tags, value)
+		}
 	}
 
 	return &News{
 		ID:         in.ID,
 		Title:      in.Title,
 		Content:    in.Content,
-		TagIDs:     in.TagIDs,
+		Tags:       tags,
 		CategoryID: in.CategoryID,
 		CreatedAt:  in.CreatedAt.Format(time.RFC822),
 		Category: Category{
