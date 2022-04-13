@@ -2,23 +2,21 @@ package app
 
 import (
 	"github.com/ivahaev/go-logger"
+	"github.com/labstack/echo/v4"
 	"github.com/vmkteam/rpcgen/v2"
+	middleware "github.com/vmkteam/zenrpc-middleware"
 	"github.com/vmkteam/zenrpc/v2"
 	"net/http"
-	"os"
 )
 
 func NewHTTP(rpc zenrpc.Server, gen rpcgen.RPCGen, addr string) error {
-	http.Handle("/v1/rpc/", rpc)
-	http.Handle("/v1/rpc/doc/", http.HandlerFunc(zenrpc.SMDBoxHandler))
-	http.Handle("/v1/rpc/news/client.go", http.HandlerFunc(rpcgen.Handler(gen.GoClient())))
+	e := echo.New()
 
-	logger.Noticef("starting server on %s", os.Getenv("HTTP_ADDR"))
+	e.Any("/v1/news/", middleware.EchoHandler(rpc))
+	e.Any("/v1/rpc/news/doc/", echo.WrapHandler(http.HandlerFunc(zenrpc.SMDBoxHandler)))
+	e.Any("/v1/news/client.go", echo.WrapHandler(http.HandlerFunc(rpcgen.Handler(gen.GoClient()))))
 
-	err := http.ListenAndServe(addr, nil)
-	if err != nil {
-		return err
-	}
+	logger.Noticef("starting server on %s", addr)
 
-	return nil
+	return e.Start(addr)
 }
