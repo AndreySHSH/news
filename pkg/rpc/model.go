@@ -3,13 +3,11 @@ package rpc
 import (
 	"github.com/vmkteam/zenrpc/v2"
 	"news/pkg/db"
-	"sync"
 )
 
 type NewsService struct {
 	zenrpc.Service
 	Repository db.NewsRepo
-	tags       sync.Map
 }
 
 type CategoryService struct {
