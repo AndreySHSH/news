@@ -81,8 +81,8 @@ func newCategory(in *db.Category) *Category {
 
 func unpackTag(news *db.News) map[int64]int64 {
 	var tagsIDs = make(map[int64]int64)
-	for _, s := range news.TagIDs {
-		tagsIDs[s] = s
+	for _, v := range news.TagIDs {
+		tagsIDs[v] = v
 	}
 
 	return tagsIDs
