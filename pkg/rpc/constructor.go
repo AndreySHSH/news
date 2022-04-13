@@ -1,22 +1,51 @@
 package rpc
 
 import (
+	"github.com/go-pg/pg/v10"
 	"github.com/vmkteam/rpcgen/v2"
+	"github.com/vmkteam/zenrpc-middleware"
 	"github.com/vmkteam/zenrpc/v2"
 	"log"
+	"net/http"
 	"news/pkg/db"
 	"os"
 	"time"
 )
 
-func NewNewsRPC(repo db.NewsRepo) (zenrpc.Server, *rpcgen.RPCGen) {
+func NewNewsRPC(dbc pg.DB) (zenrpc.Server, *rpcgen.RPCGen) {
+	dbLayer := db.New(&dbc)
+	repository := db.NewNewsRepo(dbLayer)
+
 	news := &NewsService{
-		Repo: repo,
+		Repo: repository,
 	}
 
-	rpc := zenrpc.NewServer(zenrpc.Options{ExposeSMD: true})
+	allowDebug := func(param string) middleware.AllowDebugFunc {
+		return func(req *http.Request) bool {
+			return req.FormValue(param) == "true"
+		}
+	}
+
+	isDevel := true
+	eLog := log.New(os.Stderr, "E", log.LstdFlags|log.Lshortfile)
+	dLog := log.New(os.Stdout, "D", log.LstdFlags|log.Lshortfile)
+
+	rpc := zenrpc.NewServer(zenrpc.Options{
+		ExposeSMD: true,
+		AllowCORS: true,
+	})
 	rpc.Register("news", news)
-	rpc.Use(zenrpc.Logger(log.New(os.Stderr, "", log.LstdFlags)))
+	rpc.Use(
+		middleware.WithDevel(isDevel),
+		middleware.WithHeaders(),
+		middleware.WithAPILogger(dLog.Printf, middleware.DefaultServerName),
+		middleware.WithSentry(middleware.DefaultServerName),
+		middleware.WithNoCancelContext(),
+		middleware.WithMetrics(middleware.DefaultServerName),
+		middleware.WithTiming(isDevel, allowDebug("d")),
+		middleware.WithSQLLogger(&dbc, isDevel, allowDebug("d"), allowDebug("s")),
+		middleware.WithErrorLogger(eLog.Printf, middleware.DefaultServerName),
+	)
 
 	gen := rpcgen.FromSMD(rpc.SMD())
 

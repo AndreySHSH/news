@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/go-pg/pg/v10"
 	"news/pkg/app"
-	"news/pkg/db"
 	"news/pkg/rpc"
 	"os"
 	"time"
@@ -39,11 +38,12 @@ func main() {
 	ctxApp, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	pgConnect := app.NewDB(pgDataOnConnect)
-	dbLayer := db.New(pgConnect)
-	newRepo := db.NewNewsRepo(dbLayer)
+	db := app.NewDB(pgDataOnConnect)
+	if err := db.Ping(ctxApp); err != nil {
+		panic(fmt.Sprintf(`fatal error connect DB, %s`, err.Error()))
+	}
 
-	newsRPC, gen := rpc.NewNewsRPC(newRepo)
+	newsRPC, gen := rpc.NewNewsRPC(*db)
 	go app.NewHTTP(newsRPC, *gen)
 
 	<-app.GracefulShutdown()
