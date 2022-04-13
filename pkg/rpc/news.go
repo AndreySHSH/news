@@ -14,7 +14,10 @@ func (n *NewsService) Get(ctx context.Context, filter *NewsSearch) ([]News, erro
 		return nil, zenrpc.NewError(500, err)
 	}
 
-	n.getTags(ctx)
+	err = n.getTags(ctx)
+	if err != nil {
+		return nil, zenrpc.NewError(500, err)
+	}
 
 	return n.newNewsList(nl), nil
 }
@@ -29,7 +32,10 @@ func (n *NewsService) GetByID(ctx context.Context, id int64) (*News, error) {
 		return nil, zenrpc.NewError(404, errors.New("news is not found"))
 	}
 
-	n.getTags(ctx)
+	err = n.getTags(ctx)
+	if err != nil {
+		return nil, zenrpc.NewError(500, err)
+	}
 
 	return n.newNews(news), nil
 }

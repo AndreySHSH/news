@@ -3,7 +3,6 @@ package rpc
 import (
 	"context"
 	"github.com/go-pg/pg/v10"
-	"github.com/ivahaev/go-logger"
 	"github.com/vmkteam/rpcgen/v2"
 	"github.com/vmkteam/zenrpc-middleware"
 	"github.com/vmkteam/zenrpc/v2"
@@ -80,23 +79,19 @@ func newCategory(in *db.Category) *Category {
 	}
 }
 
-func (n *NewsService) getTags(ctx context.Context) {
-	var tags = make(map[int64]Tag)
-
+func (n *NewsService) getTags(ctx context.Context) error {
 	tl, err := n.Repository.TagsByFilters(ctx, nil, db.PagerNoLimit)
 	if err != nil {
-		logger.Error(err)
-
+		return err
 	}
 
 	for _, v := range tl {
-		tags[v.ID] = Tag{
+		n.tags.Store(v.ID, Tag{
 			ID:    v.ID,
 			Title: v.Title,
-		}
+		})
 	}
-
-	n.tags = tags
+	return nil
 }
 
 func (n *NewsService) newNewsList(in []db.News) []News {
@@ -117,9 +112,11 @@ func (n *NewsService) newNews(in *db.News) *News {
 	var tags []Tag
 
 	for _, v := range in.TagIDs {
-		if value, is := n.tags[v]; is != false {
-			tags = append(tags, value)
+
+		if value, is := n.tags.Load(v); is != false {
+			tags = append(tags, value.(Tag))
 		}
+
 	}
 
 	return &News{
