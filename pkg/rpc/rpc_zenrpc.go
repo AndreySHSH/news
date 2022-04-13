@@ -24,7 +24,25 @@ func (NewsService) SMD() smd.ServiceInfo {
 	return smd.ServiceInfo{
 		Methods: map[string]smd.Service{
 			"Get": {
-				Parameters: []smd.JSONSchema{},
+				Parameters: []smd.JSONSchema{
+					{
+						Name:     "filter",
+						Optional: true,
+						Type:     smd.Object,
+						Properties: smd.PropertyList{
+							{
+								Name:     "categoryID",
+								Optional: true,
+								Type:     smd.Integer,
+							},
+							{
+								Name:     "tagID",
+								Optional: true,
+								Type:     smd.Integer,
+							},
+						},
+					},
+				},
 				Returns: smd.JSONSchema{
 					Type: smd.Array,
 					Items: map[string]string{
@@ -92,48 +110,43 @@ func (NewsService) SMD() smd.ServiceInfo {
 					},
 				},
 				Returns: smd.JSONSchema{
-					Type: smd.Array,
-					Items: map[string]string{
-						"$ref": "#/definitions/News",
-					},
-					Definitions: map[string]smd.Definition{
-						"News": {
-							Type: "object",
-							Properties: smd.PropertyList{
-								{
-									Name: "id",
-									Type: smd.Integer,
-								},
-								{
-									Name: "title",
-									Type: smd.String,
-								},
-								{
-									Name: "content",
-									Type: smd.String,
-								},
-								{
-									Name: "tagIDs",
-									Type: smd.Array,
-									Items: map[string]string{
-										"type": smd.Integer,
-									},
-								},
-								{
-									Name: "categoryID",
-									Type: smd.Integer,
-								},
-								{
-									Name: "createdAt",
-									Type: smd.String,
-								},
-								{
-									Name: "category",
-									Ref:  "#/definitions/Category",
-									Type: smd.Object,
-								},
+					Optional: true,
+					Type:     smd.Object,
+					Properties: smd.PropertyList{
+						{
+							Name: "id",
+							Type: smd.Integer,
+						},
+						{
+							Name: "title",
+							Type: smd.String,
+						},
+						{
+							Name: "content",
+							Type: smd.String,
+						},
+						{
+							Name: "tagIDs",
+							Type: smd.Array,
+							Items: map[string]string{
+								"type": smd.Integer,
 							},
 						},
+						{
+							Name: "categoryID",
+							Type: smd.Integer,
+						},
+						{
+							Name: "createdAt",
+							Type: smd.String,
+						},
+						{
+							Name: "category",
+							Ref:  "#/definitions/Category",
+							Type: smd.Object,
+						},
+					},
+					Definitions: map[string]smd.Definition{
 						"Category": {
 							Type: "object",
 							Properties: smd.PropertyList{
@@ -151,7 +164,25 @@ func (NewsService) SMD() smd.ServiceInfo {
 				},
 			},
 			"Count": {
-				Parameters: []smd.JSONSchema{},
+				Parameters: []smd.JSONSchema{
+					{
+						Name:     "filter",
+						Optional: true,
+						Type:     smd.Object,
+						Properties: smd.PropertyList{
+							{
+								Name:     "categoryID",
+								Optional: true,
+								Type:     smd.Integer,
+							},
+							{
+								Name:     "tagID",
+								Optional: true,
+								Type:     smd.Integer,
+							},
+						},
+					},
+				},
 				Returns: smd.JSONSchema{
 					Type: smd.Integer,
 				},
@@ -167,7 +198,23 @@ func (s NewsService) Invoke(ctx context.Context, method string, params json.RawM
 
 	switch method {
 	case RPC.NewsService.Get:
-		resp.Set(s.Get(ctx))
+		var args = struct {
+			Filter *NewsSearch `json:"filter"`
+		}{}
+
+		if zenrpc.IsArray(params) {
+			if params, err = zenrpc.ConvertToObject([]string{"filter"}, params); err != nil {
+				return zenrpc.NewResponseError(nil, zenrpc.InvalidParams, "", err.Error())
+			}
+		}
+
+		if len(params) > 0 {
+			if err := json.Unmarshal(params, &args); err != nil {
+				return zenrpc.NewResponseError(nil, zenrpc.InvalidParams, "", err.Error())
+			}
+		}
+
+		resp.Set(s.Get(ctx, args.Filter))
 
 	case RPC.NewsService.GetByID:
 		var args = struct {
@@ -189,7 +236,23 @@ func (s NewsService) Invoke(ctx context.Context, method string, params json.RawM
 		resp.Set(s.GetByID(ctx, args.Id))
 
 	case RPC.NewsService.Count:
-		resp.Set(s.Count(ctx))
+		var args = struct {
+			Filter *NewsSearch `json:"filter"`
+		}{}
+
+		if zenrpc.IsArray(params) {
+			if params, err = zenrpc.ConvertToObject([]string{"filter"}, params); err != nil {
+				return zenrpc.NewResponseError(nil, zenrpc.InvalidParams, "", err.Error())
+			}
+		}
+
+		if len(params) > 0 {
+			if err := json.Unmarshal(params, &args); err != nil {
+				return zenrpc.NewResponseError(nil, zenrpc.InvalidParams, "", err.Error())
+			}
+		}
+
+		resp.Set(s.Count(ctx, args.Filter))
 
 	default:
 		resp = zenrpc.NewResponseError(nil, zenrpc.MethodNotFound, "", nil)

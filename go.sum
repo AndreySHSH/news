@@ -120,10 +120,6 @@ github.com/prometheus/procfs v0.0.0-20181005140218-185b4288413d/go.mod h1:c3At6R
 github.com/prometheus/procfs v0.0.2/go.mod h1:TjEm7ze935MbeOT/UhFTIMYKhuLP4wbCsTZCD3I8kEA=
 github.com/prometheus/procfs v0.1.3 h1:F0+tqvhOksq22sc6iCHF5WGlWjdwj92p0udFh1VFBS8=
 github.com/prometheus/procfs v0.1.3/go.mod h1:lV6e/gmhEcM9IjHGsFOCxxuZ+z1YqCvr4OA4YeYWdaU=
-github.com/semrush/zenrpc v1.1.1 h1:McE4BFoXP95NnDU+tQHhfzVpmODS4p55JKXxHR64nx4=
-github.com/semrush/zenrpc v1.1.1/go.mod h1:DUljRIQQJL9gBAYcwuZHsIK/GTIFUImy8UqhioyJvKQ=
-github.com/semrush/zenrpc/v2 v2.1.0 h1:a6jKcimSTS2u/FkAg8qXkAcplBC9vEAInl7aQY47u7g=
-github.com/semrush/zenrpc/v2 v2.1.0/go.mod h1:+o94fyVC+TvYuT5ULLyBmql+ezicEFKtsieIXSeWBqg=
 github.com/sirupsen/logrus v1.2.0/go.mod h1:LxeOpSwHxABJmUn/MG1IvRgCAasNZTLOkJPxbbu5VWo=
 github.com/sirupsen/logrus v1.4.2/go.mod h1:tLMulIdttU9McNUspp0xgXVQah82FyeX6MwdIuYE2rE=
 github.com/smartystreets/assertions v0.0.0-20180927180507-b2de0cb4f26d/go.mod h1:OnSkiWE9lh6wB0YB77sQom3nweQdgAjqCqsofrRNTgc=
@@ -148,8 +144,11 @@ github.com/vmihailenco/tagparser v0.1.2 h1:gnjoVuB/kljJ5wICEEOpx98oXMWPLj22G67Vb
 github.com/vmihailenco/tagparser v0.1.2/go.mod h1:OeAg3pn3UbLjkWt+rN9oFYB6u/cQgqMEUPoW2WPyhdI=
 github.com/vmihailenco/tagparser/v2 v2.0.0 h1:y09buUbR+b5aycVFQs/g70pqKVZNBmxwAhO7/IwNM9g=
 github.com/vmihailenco/tagparser/v2 v2.0.0/go.mod h1:Wri+At7QHww0WTrCBeu4J6bNtoV6mEfg5OIWRZA9qds=
-github.com/vmkteam/rpcgen v1.0.0 h1:gss5OKz67Rn4LFb29nd2w+WLI6qQmDiCs3zKXMl1NlA=
-github.com/vmkteam/rpcgen v1.0.0/go.mod h1:FwpEyFgbxd8k4CAk2tNS6k8vtody5EhpDka9GdwAIyk=
+github.com/vmkteam/rpcgen/v2 v2.1.5 h1:zrF1v9OAnlfS7KuRLZTwfuFAj3OoX0EaHOa8jHUO1vg=
+github.com/vmkteam/rpcgen/v2 v2.1.5/go.mod h1:CtYPkqhVsVDeMTTkst6vUhFRnqpGaEiSaWtZDNJjtB4=
+github.com/vmkteam/zenrpc v1.1.1 h1:WmModRVCwgs7XEkeJcVvmDOwEtAQk0TuYV91wdpAaCw=
+github.com/vmkteam/zenrpc v1.1.1/go.mod h1:x3fCkb9HHOpqwqC7TKXf8pyXWdPxEt2Zrndl50YxexM=
+github.com/vmkteam/zenrpc/v2 v2.2.3/go.mod h1:DUVyDLOKkQ0GelOkw5OcNbOi43QWhXdDM9XimWoeVSI=
 github.com/vmkteam/zenrpc/v2 v2.2.4 h1:54Wc0yted8xVX1aQzjrOwu48sTynmBN5j0cbeFUxSdc=
 github.com/vmkteam/zenrpc/v2 v2.2.4/go.mod h1:DUVyDLOKkQ0GelOkw5OcNbOi43QWhXdDM9XimWoeVSI=
 github.com/yuin/goldmark v1.1.32/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=

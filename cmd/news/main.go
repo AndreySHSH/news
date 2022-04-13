@@ -3,9 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
-	"news/pkg/app/loaders"
+	"github.com/go-pg/pg/v10"
+	"news/pkg/app"
 	"news/pkg/db"
 	"news/pkg/rpc"
+	"os"
 	"time"
 
 	"github.com/ivahaev/go-logger"
@@ -27,15 +29,24 @@ func main() {
 		panic(fmt.Sprintf(`fatal error loading .env file, %s`, err.Error()))
 	}
 
+	pgDataOnConnect := pg.Options{
+		User:     os.Getenv("POSTGRES_USER"),
+		Password: os.Getenv("POSTGRES_PASSWORD"),
+		Database: os.Getenv("POSTGRES_DBNAME"),
+		Addr:     fmt.Sprintf(`%s:%s`, os.Getenv("POSTGRES_HOST"), os.Getenv("POSTGRES_PORT")),
+	}
+
 	ctxApp, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	dataBase := db.New(loaders.NewDB())
-	newRepo := db.NewNewsRepo(dataBase)
+	pgConnect := app.NewDB(pgDataOnConnect)
+	dbLayer := db.New(pgConnect)
+	newRepo := db.NewNewsRepo(dbLayer)
 
-	go rpc.NewNewsRPC(newRepo)
+	newsRPC, gen := rpc.NewNewsRPC(newRepo)
+	go app.NewHTTP(newsRPC, *gen)
 
-	<-loaders.GracefulShutdown()
+	<-app.GracefulShutdown()
 	_, forceCancel := context.WithTimeout(ctxApp, shutDownDuration)
 
 	logger.Notice("Graceful Shutdown")
