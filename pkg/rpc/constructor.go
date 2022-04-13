@@ -81,9 +81,7 @@ func newCategory(in *db.Category) *Category {
 
 func unpackTag(news *db.News) map[int64]int64 {
 	var tagsIDs = make(map[int64]int64)
-	for _, v := range news.TagIDs {
-		tagsIDs[v] = v
-	}
+	enumerationOfIdentifiers(news.TagIDs, tagsIDs)
 
 	return tagsIDs
 }
@@ -91,12 +89,16 @@ func unpackTag(news *db.News) map[int64]int64 {
 func unpackTags(news []db.News) map[int64]int64 {
 	var tagsIDs = make(map[int64]int64)
 	for _, v := range news {
-		for _, s := range v.TagIDs {
-			tagsIDs[s] = s
-		}
+		enumerationOfIdentifiers(v.TagIDs, tagsIDs)
 	}
 
 	return tagsIDs
+}
+
+func enumerationOfIdentifiers(in []int64, tagsIDs map[int64]int64) {
+	for _, s := range in {
+		tagsIDs[s] = s
+	}
 }
 
 func (n *NewsService) getTags(ctx context.Context, tagsIDsMap map[int64]int64) (*map[int64]Tag, error) {
@@ -118,6 +120,7 @@ func (n *NewsService) getTags(ctx context.Context, tagsIDsMap map[int64]int64) (
 			Title: v.Title,
 		}
 	}
+
 	return &tags, nil
 }
 
@@ -139,11 +142,9 @@ func (n *NewsService) newNews(in *db.News, tagsMap map[int64]Tag) *News {
 	var tags []Tag
 
 	for _, v := range in.TagIDs {
-
 		if value, is := tagsMap[v]; is != false {
 			tags = append(tags, value)
 		}
-
 	}
 
 	return &News{
