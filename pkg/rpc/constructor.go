@@ -17,7 +17,11 @@ func NewNewsRPC(dbc pg.DB) (zenrpc.Server, *rpcgen.RPCGen) {
 	repository := db.NewNewsRepo(dbLayer)
 
 	news := &NewsService{
-		Repo: repository,
+		Repository: repository,
+	}
+
+	category := &CategoryService{
+		Repository: repository,
 	}
 
 	allowDebug := func(param string) middleware.AllowDebugFunc {
@@ -35,6 +39,7 @@ func NewNewsRPC(dbc pg.DB) (zenrpc.Server, *rpcgen.RPCGen) {
 		AllowCORS: true,
 	})
 	rpc.Register("news", news)
+	rpc.Register("category", category)
 	rpc.Use(
 		middleware.WithDevel(isDevel),
 		middleware.WithHeaders(),
@@ -50,6 +55,27 @@ func NewNewsRPC(dbc pg.DB) (zenrpc.Server, *rpcgen.RPCGen) {
 	gen := rpcgen.FromSMD(rpc.SMD())
 
 	return rpc, gen
+}
+
+func newCategoryList(in []db.Category) []Category {
+	var news []Category
+
+	for _, v := range in {
+		news = append(news, *newCategory(&v))
+	}
+
+	return news
+}
+
+func newCategory(in *db.Category) *Category {
+	if in == nil {
+		return nil
+	}
+
+	return &Category{
+		ID:    in.ID,
+		Title: in.Title,
+	}
 }
 
 func newNewsList(in []db.News) []News {
@@ -89,5 +115,15 @@ func (in *NewsSearch) ToDB() *db.NewsSearch {
 	return &db.NewsSearch{
 		CategoryID: in.CategoryID,
 		TagID:      in.TagID,
+	}
+}
+
+func (in *CategorySearch) ToDB() *db.CategorySearch {
+	if in == nil {
+		return nil
+	}
+
+	return &db.CategorySearch{
+		ID: in.CategoryID,
 	}
 }

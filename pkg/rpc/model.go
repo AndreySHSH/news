@@ -7,12 +7,21 @@ import (
 
 type NewsService struct {
 	zenrpc.Service
-	Repo db.NewsRepo
+	Repository db.NewsRepo
+}
+
+type CategoryService struct {
+	zenrpc.Service
+	Repository db.NewsRepo
 }
 
 type NewsSearch struct {
 	CategoryID *int64 `json:"categoryID"`
 	TagID      *int64 `json:"tagID"`
+}
+
+type CategorySearch struct {
+	CategoryID *int64 `json:"id"`
 }
 
 type Category struct {

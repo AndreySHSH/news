@@ -9,16 +9,16 @@ import (
 )
 
 func (n *NewsService) Get(ctx context.Context, filter *NewsSearch) ([]News, error) {
-	nn, err := n.Repo.NewsByFilters(ctx, filter.ToDB(), db.PagerNoLimit, n.Repo.FullNews())
+	nl, err := n.Repository.NewsByFilters(ctx, filter.ToDB(), db.PagerNoLimit, n.Repository.FullNews())
 	if err != nil {
 		return nil, zenrpc.NewError(500, err)
 	}
 
-	return newNewsList(nn), nil
+	return newNewsList(nl), nil
 }
 
 func (n *NewsService) GetByID(ctx context.Context, id int64) (*News, error) {
-	news, err := n.Repo.NewsByID(ctx, id, n.Repo.FullNews())
+	news, err := n.Repository.NewsByID(ctx, id, n.Repository.FullNews())
 	if err != nil {
 		return nil, zenrpc.NewError(500, err)
 	}
@@ -31,7 +31,7 @@ func (n *NewsService) GetByID(ctx context.Context, id int64) (*News, error) {
 }
 
 func (n *NewsService) Count(ctx context.Context, filter *NewsSearch) (int, error) {
-	count, err := n.Repo.CountNews(ctx, filter.ToDB(), n.Repo.FullNews())
+	count, err := n.Repository.CountNews(ctx, filter.ToDB(), n.Repository.FullNews())
 	if err != nil {
 		return 0, zenrpc.NewError(500, err)
 	}

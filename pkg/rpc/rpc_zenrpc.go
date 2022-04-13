@@ -11,12 +11,16 @@ import (
 )
 
 var RPC = struct {
-	NewsService struct{ Get, GetByID, Count string }
+	NewsService     struct{ Get, GetByID, Count string }
+	CategoryService struct{ Get string }
 }{
 	NewsService: struct{ Get, GetByID, Count string }{
 		Get:     "get",
 		GetByID: "getbyid",
 		Count:   "count",
+	},
+	CategoryService: struct{ Get string }{
+		Get: "get",
 	},
 }
 
@@ -253,6 +257,82 @@ func (s NewsService) Invoke(ctx context.Context, method string, params json.RawM
 		}
 
 		resp.Set(s.Count(ctx, args.Filter))
+
+	default:
+		resp = zenrpc.NewResponseError(nil, zenrpc.MethodNotFound, "", nil)
+	}
+
+	return resp
+}
+
+func (CategoryService) SMD() smd.ServiceInfo {
+	return smd.ServiceInfo{
+		Methods: map[string]smd.Service{
+			"Get": {
+				Parameters: []smd.JSONSchema{
+					{
+						Name:     "filter",
+						Optional: true,
+						Type:     smd.Object,
+						Properties: smd.PropertyList{
+							{
+								Name:     "id",
+								Optional: true,
+								Type:     smd.Integer,
+							},
+						},
+					},
+				},
+				Returns: smd.JSONSchema{
+					Type: smd.Array,
+					Items: map[string]string{
+						"$ref": "#/definitions/Category",
+					},
+					Definitions: map[string]smd.Definition{
+						"Category": {
+							Type: "object",
+							Properties: smd.PropertyList{
+								{
+									Name: "id",
+									Type: smd.Integer,
+								},
+								{
+									Name: "title",
+									Type: smd.String,
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+// Invoke is as generated code from zenrpc cmd
+func (s CategoryService) Invoke(ctx context.Context, method string, params json.RawMessage) zenrpc.Response {
+	resp := zenrpc.Response{}
+	var err error
+
+	switch method {
+	case RPC.CategoryService.Get:
+		var args = struct {
+			Filter *CategorySearch `json:"filter"`
+		}{}
+
+		if zenrpc.IsArray(params) {
+			if params, err = zenrpc.ConvertToObject([]string{"filter"}, params); err != nil {
+				return zenrpc.NewResponseError(nil, zenrpc.InvalidParams, "", err.Error())
+			}
+		}
+
+		if len(params) > 0 {
+			if err := json.Unmarshal(params, &args); err != nil {
+				return zenrpc.NewResponseError(nil, zenrpc.InvalidParams, "", err.Error())
+			}
+		}
+
+		resp.Set(s.Get(ctx, args.Filter))
 
 	default:
 		resp = zenrpc.NewResponseError(nil, zenrpc.MethodNotFound, "", nil)
