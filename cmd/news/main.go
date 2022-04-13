@@ -35,10 +35,15 @@ func main() {
 		Addr:     fmt.Sprintf(`%s:%s`, os.Getenv("POSTGRES_HOST"), os.Getenv("POSTGRES_PORT")),
 	}
 
+	httpAdder := os.Getenv("HTTP_ADDR")
+	if httpAdder == "" {
+		panic("failed to get http address from environment")
+	}
+
 	ctxApp, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	db := app.NewDB(pgDataOnConnect)
+	db := pg.Connect(&pgDataOnConnect)
 	if err := db.Ping(ctxApp); err != nil {
 		panic(fmt.Sprintf(`fatal error connect DB, error: %s`, err.Error()))
 	}
@@ -51,7 +56,12 @@ func main() {
 	}(db)
 
 	newsRPC, gen := rpc.NewNewsRPC(*db)
-	go app.NewHTTP(newsRPC, *gen)
+	go func() {
+		err := app.NewHTTP(newsRPC, *gen, httpAdder)
+		if err != nil {
+			panic(err)
+		}
+	}()
 
 	<-app.GracefulShutdown()
 	_, forceCancel := context.WithTimeout(ctxApp, shutDownDuration)
