@@ -1,20 +1,5 @@
 package rpc
 
-import (
-	"github.com/vmkteam/zenrpc/v2"
-	"news/pkg/db"
-)
-
-type NewsService struct {
-	zenrpc.Service
-	Repository db.NewsRepo
-}
-
-type CategoryService struct {
-	zenrpc.Service
-	Repository db.NewsRepo
-}
-
 type NewsSearch struct {
 	CategoryID *int64 `json:"categoryID"`
 	TagID      *int64 `json:"tagID"`

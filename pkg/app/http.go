@@ -12,9 +12,9 @@ import (
 func NewHTTP(rpc zenrpc.Server, gen rpcgen.RPCGen, addr string) error {
 	e := echo.New()
 
-	e.Any("/v1/news/", middleware.EchoHandler(rpc))
-	e.Any("/v1/rpc/news/doc/", echo.WrapHandler(http.HandlerFunc(zenrpc.SMDBoxHandler)))
-	e.Any("/v1/news/client.go", echo.WrapHandler(http.HandlerFunc(rpcgen.Handler(gen.GoClient()))))
+	e.Any("/v1/project/", middleware.EchoHandler(rpc))
+	e.Any("/v1/rpc/project/doc/", echo.WrapHandler(http.HandlerFunc(zenrpc.SMDBoxHandler)))
+	e.Any("/v1/project/client.go", echo.WrapHandler(http.HandlerFunc(rpcgen.Handler(gen.GoClient()))))
 
 	logger.Noticef("starting server on %s", addr)
 

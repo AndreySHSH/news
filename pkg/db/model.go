@@ -72,7 +72,7 @@ var Tables = struct {
 	News: struct {
 		Name, Alias string
 	}{
-		Name:  "news",
+		Name:  "project",
 		Alias: "t",
 	},
 	Tag: struct {
@@ -92,7 +92,7 @@ type Category struct {
 }
 
 type News struct {
-	tableName struct{} `pg:"news,alias:t,discard_unknown_columns"`
+	tableName struct{} `pg:"project,alias:t,discard_unknown_columns"`
 
 	ID         int64     `pg:"newsId,pk"`
 	Title      string    `pg:"title,use_zero"`
